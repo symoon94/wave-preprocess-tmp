@@ -25,7 +25,7 @@ decoded = Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 
 autoencoder = Model(input_img, decoded)
 autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
-
+import ipdb; ipdb.set_trace()
 
 from keras.datasets import mnist
 import numpy as np
