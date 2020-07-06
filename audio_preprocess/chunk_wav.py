@@ -3,7 +3,7 @@ from pydub.utils import make_chunks
 import glob
 from pathlib import Path
 
-filedir = "../data/"
+filedir = "../data/"  # the directory path where wave files exist
 outdir = "../chunkdata/wav/"
 
 wavelist = glob.glob("../data/*") # ['../data/02.wav', '../data/03.wav']

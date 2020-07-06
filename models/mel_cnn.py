@@ -5,7 +5,7 @@ from keras_preprocessing.image import ImageDataGenerator
 
 
 metadata=pd.read_csv('../metadata/audio_metadata.csv',dtype=str)
-imgpath = '/Users/sooyoungmoon/git/coretech/chunkdata/img/'
+imgpath = '../chunkdata/img/'
 
 traindf = {'ID':[], 'class':[]}
 
