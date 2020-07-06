@@ -41,7 +41,7 @@ x_test = np.reshape(x_test, (len(x_test), 28, 28, 1))  # adapt this if using `ch
 from keras.callbacks import TensorBoard
 
 autoencoder.fit(x_train, x_train,
-                epochs=50,
+                epochs=20,
                 batch_size=128,
                 shuffle=True,
                 validation_data=(x_test, x_test),
@@ -54,6 +54,8 @@ decoded_imgs = autoencoder.predict(x_test)
 # encoded_imgs = encoder.predict(x_test)
 # decoded_imgs = decoder.predict(encoded_imgs)
 
+
+import ipdb; ipdb.set_trace()
 
 n = 10
 plt.figure(figsize=(20, 4))
@@ -74,12 +76,12 @@ for i in range(n):
 plt.show()
 
 
-n = 10
-plt.figure(figsize=(20, 8))
-for i in range(n):
-    ax = plt.subplot(1, n, i)
-    plt.imshow(encoded_imgs[i].reshape(4, 4 * 8).T)
-    plt.gray()
-    ax.get_xaxis().set_visible(False)
-    ax.get_yaxis().set_visible(False)
-plt.show()
+# n = 10
+# plt.figure(figsize=(20, 8))
+# for i in range(n):
+#     ax = plt.subplot(1, n, i)
+#     plt.imshow(encoded_imgs[i].reshape(4, 4 * 8).T)
+#     plt.gray()
+#     ax.get_xaxis().set_visible(False)
+#     ax.get_yaxis().set_visible(False)
+# plt.show()
