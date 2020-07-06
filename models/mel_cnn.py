@@ -70,108 +70,46 @@ from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
 import tensorflow as tf
 
 # --- cnn version ---
-# model = Sequential()
-# model.add(Conv2D(32, (3, 3), padding='same',
-#                  input_shape=(64,64,3)))
-# model.add(Activation('relu'))
-# model.add(Conv2D(64, (3, 3)))
-# model.add(Activation('relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-# model.add(Conv2D(64, (3, 3), padding='same'))
-# model.add(Activation('relu'))
-# model.add(Conv2D(64, (3, 3)))
-# model.add(Activation('relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.5))
-# model.add(Conv2D(128, (3, 3), padding='same'))
-# model.add(Activation('relu'))
-# model.add(Conv2D(128, (3, 3)))
-# model.add(Activation('relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.5))
-# model.add(Flatten())
-# model.add(Dense(512))
-# model.add(Activation('relu'))
-# model.add(Dropout(0.5))
-# model.add(Dense(2, activation='softmax'))
+model = Sequential()
+model.add(Conv2D(32, (3, 3), padding='same',
+                 input_shape=(64,64,3)))
+model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Conv2D(64, (3, 3), padding='same'))
+model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.5))
+model.add(Conv2D(128, (3, 3), padding='same'))
+model.add(Activation('relu'))
+model.add(Conv2D(128, (3, 3)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.5))
+model.add(Flatten())
+model.add(Dense(512))
+model.add(Activation('relu'))
+model.add(Dropout(0.5))
+model.add(Dense(2, activation='softmax'))
 
-# model.compile(optimizers.RMSprop(lr=0.0005, decay=1e-6),loss="categorical_crossentropy",metrics=["accuracy"])
-# model.summary()
+model.compile(optimizers.RMSprop(lr=0.0005, decay=1e-6),loss="categorical_crossentropy",metrics=["accuracy"])
+model.summary()
 
-# ----- ae version -----
-def make_batch(img_list, batch_size):
-    i = 0
-    train_dataset = []
-    for each in img_list:
-        img = cv2.imread(each)
-        img = cv2.resize(img, (64, 64), interpolation=cv2.INTER_AREA)
-        train_dataset.append(img.astype("float32")/255.0)
-        i += 1
-    return train_dataset
+#Fitting keras model, no test gen for now
+STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
+STEP_SIZE_VALID=valid_generator.n//valid_generator.batch_size
+#STEP_SIZE_TEST=test_generator.n//test_generator.batch_size
 
-train_imgs = glob.glob("../chunkdata/img/01/*.png")
-test_imgs = glob.glob("../chunkdata/img/01/*.png")
-train_loader = make_batch(train_imgs, 16)
-# test_loader = make_batch(test_imgs, 16)
-
-
-train_loader = tf.convert_to_tensor(train_loader)
-
-# train_loader = torch.FloatTensor(train_loader)
-# test_loader = torch.FloatTensor(test_loader)
-
-import ipdb; ipdb.set_trace()
-input_img = Input(shape=(64, 64, 3))
-x = Conv2D(64, (3, 3), padding='same')(input_img)
-x = BatchNormalization()(x)
-x = Activation('relu')(x)
-x = MaxPooling2D((2, 2), padding='same')(x)
-x = Conv2D(32, (3, 3), padding='same')(x)
-x = BatchNormalization()(x)
-x = Activation('relu')(x)
-x = MaxPooling2D((2, 2), padding='same')(x)
-x = Conv2D(16, (3, 3), padding='same')(x)
-x = BatchNormalization()(x)
-x = Activation('relu')(x)
-encoded = MaxPooling2D((2, 2), padding='same')(x)
-
-x = Conv2D(16, (3, 3), padding='same')(encoded)
-x = BatchNormalization()(x)
-x = Activation('relu')(x)
-x = UpSampling2D((2, 2))(x)
-x = Conv2D(32, (3, 3), padding='same')(x)
-x = BatchNormalization()(x)
-x = Activation('relu')(x)
-x = UpSampling2D((2, 2))(x)
-x = Conv2D(64, (3, 3), padding='same')(x)
-x = BatchNormalization()(x)
-x = Activation('relu')(x)
-x = UpSampling2D((2, 2))(x)
-x = Conv2D(3, (3, 3), padding='same')(x)
-x = BatchNormalization()(x)
-decoded = Activation('sigmoid')(x)
-
-model = Model(input_img, decoded)
-model.compile(optimizer='adam', loss='binary_crossentropy')
-
-
-
-# #Fitting keras model, no test gen for now
-# STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
-# STEP_SIZE_VALID=valid_generator.n//valid_generator.batch_size
-# #STEP_SIZE_TEST=test_generator.n//test_generator.batch_size
-# import ipdb; ipdb.set_trace()
-# model.fit_generator(generator=train_generator,
-#                     steps_per_epoch=STEP_SIZE_TRAIN,
-#                     validation_data=valid_generator,
-#                     validation_steps=STEP_SIZE_VALID,
-#                     epochs=20
-# )
-
-model.fit(train_loader,train_loader, epochs = 20)
-
-import ipdb; ipdb.set_trace()
+model.fit_generator(generator=train_generator,
+                    steps_per_epoch=STEP_SIZE_TRAIN,
+                    validation_data=valid_generator,
+                    validation_steps=STEP_SIZE_VALID,
+                    epochs=20
+)
 
 # model.evaluate(valid_generator, steps=STEP_SIZE_VALID)
 

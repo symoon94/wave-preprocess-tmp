@@ -65,17 +65,7 @@ model.fit(x_train, x_train,
           # validation_data=(x_test_noisy, x_test))
 
 
-######## 모델 저장 (weight 저장)###########
-#json 파일 저장
-json_save = './weight_save/'
-
-model_json = model.to_json()
-with open(json_save+"model.json", "w") as json_file : 
-    json_file.write(model_json)
-
-#h5 파일 저장
-model.save_weights(json_save+"model.h5")
-print("Saved model to disk")
+∑
 
 
 
