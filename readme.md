@@ -1,4 +1,4 @@
-# audio preprocess
+# wave-preprocess-tmp
 
 1. chunk_wav.py
 
