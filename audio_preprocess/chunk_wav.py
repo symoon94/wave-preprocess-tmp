@@ -14,10 +14,10 @@ for wave in wavelist:
     myaudio = AudioSegment.from_file(wave , "wav") 
     chunks = make_chunks(myaudio, chunk_length_ms) #Make chunks of one sec
     subdir = wave.lstrip(filedir).rstrip(".wav")
-    subpath = outdir + subdir
-    Path(subpath).mkdir(parents=True, exist_ok=True)
+    # subpath = outdir + subdir
+    # Path(subpath).mkdir(parents=True, exist_ok=True)
     #Export all of the individual chunks as wav files
     for i, chunk in enumerate(chunks):
-        chunk_name = subpath + "/" + subdir + "_chunk{0}.wav".format(str(i).zfill(2))
+        chunk_name = outdir + "/" + subdir + "_chunk{0}.wav".format(str(i).zfill(2))
         chunk.export(chunk_name, format="wav")
 

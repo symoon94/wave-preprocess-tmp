@@ -20,8 +20,8 @@ def make_batch(img_list, batch_size):
         i += 1
     return train_dataset
 
-train_imgs = glob.glob("../chunkdata/img/01/*.png")
-test_imgs = glob.glob("../chunkdata/img/01/*.png")
+train_imgs = glob.glob("../chunkdata/img/*.png")
+test_imgs = glob.glob("../chunkdata/img/*.png")
 train_loader = make_batch(train_imgs, 16)
 
 train_loader = tf.convert_to_tensor(train_loader)
@@ -66,7 +66,7 @@ model.fit(train_loader,train_loader, epochs = 10, batch)
 import ipdb; ipdb.set_trace()
 
 
-ex = "../chunkdata/img/173/173_chunk05.png"
+ex = "../chunkdata/img/173_chunk05.png"
 img = cv2.imread(ex)
 img = cv2.resize(img, (64, 64))
 img = img.astype("float32")/255.0
