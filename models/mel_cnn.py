@@ -42,10 +42,10 @@ train_generator=datagen.flow_from_dataframe(
     x_col="ID",
     y_col="class",
     subset="training",
-    batch_size=32,
+    batch_size=1,
     seed=42,
     shuffle=True,
-    class_mode="categorical",
+    class_mode=None,
     target_size=(64,64))
 
 valid_generator=datagen.flow_from_dataframe(
@@ -54,10 +54,10 @@ valid_generator=datagen.flow_from_dataframe(
     x_col="ID",
     y_col="class",
     subset="validation",
-    batch_size=32,
+    batch_size=1,
     seed=42,
     shuffle=True,
-    class_mode="categorical",
+    class_mode=None,
     target_size=(64,64))
 
 # ----model----
@@ -98,6 +98,33 @@ from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
 # model.summary()
 
 # ----- ae version -----
+def make_batch(img_list, batch_size):
+    i = 0
+    train_dataset = []
+    tmp = []
+    for each in img_list:
+        if i == batch_size:
+            i = 0
+            train_dataset.append(tmp)
+            tmp = []
+        img = cv2.imread(each)
+        img = cv2.resize(img, (20, 100), interpolation=cv2.INTER_AREA)
+        
+        img = np.moveaxis(img, -1, 0)
+        tmp.append(img.astype("float32")/255.0)
+        i += 1
+    return train_dataset
+
+train_imgs = glob.glob("../*.png")
+test_imgs = glob.glob("C:/Users/CT_NT_CNY/Desktop/python test1/mel ae/image/image cut/*.png")
+train_loader = make_batch(train_imgs, 128)
+test_loader = make_batch(test_imgs, 128)
+
+# train_loader = torch.FloatTensor(train_loader)
+# test_loader = torch.FloatTensor(test_loader)
+
+
+
 model = Sequential()
 model.add(Conv2D(64, (3, 3), padding='same',
                  input_shape=(64,64,3)))
@@ -132,16 +159,18 @@ model.summary()
 
 
 
-#Fitting keras model, no test gen for now
-STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
-STEP_SIZE_VALID=valid_generator.n//valid_generator.batch_size
-#STEP_SIZE_TEST=test_generator.n//test_generator.batch_size
-model.fit_generator(generator=train_generator,
-                    steps_per_epoch=STEP_SIZE_TRAIN,
-                    validation_data=valid_generator,
-                    validation_steps=STEP_SIZE_VALID,
-                    epochs=20
-)
+# #Fitting keras model, no test gen for now
+# STEP_SIZE_TRAIN=train_generator.n//train_generator.batch_size
+# STEP_SIZE_VALID=valid_generator.n//valid_generator.batch_size
+# #STEP_SIZE_TEST=test_generator.n//test_generator.batch_size
+# model.fit_generator(generator=train_generator,
+#                     steps_per_epoch=STEP_SIZE_TRAIN,
+#                     validation_data=valid_generator,
+#                     validation_steps=STEP_SIZE_VALID,
+#                     epochs=20
+# )
+
+model.fit(train_loader,train_loader)
 
 import ipdb; ipdb.set_trace()
 import cv2
