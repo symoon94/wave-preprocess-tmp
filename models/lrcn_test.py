@@ -1,5 +1,8 @@
 '''
-200ms 이미지를 timestep 1로 해서 -> lrcn -> 폭력/비폭력 classification
+mnist로 모델 확인
+
+Epoch 100/100
+200/200 [==============================] - 2s 9ms/step - loss: 0.2978 - accuracy: 0.9150 - val_loss: 0.1658 - val_accuracy: 0.9625
 '''
 
 import logging
@@ -22,6 +25,18 @@ import cv2
 import matplotlib.pyplot as plt
 
 import re
+
+# mnist
+import tensorflow as tf
+from keras.utils.np_utils import to_categorical
+
+(X_train, y_train), (X_test, y_test) = tf.keras.datasets.mnist.load_data()
+X_train = np.array(X_train[:2500]).reshape((-1, 1, 28, 28, 1))
+X_test = np.array(X_test[:500]).reshape((-1, 1, 28, 28, 1))
+# import ipdb; ipdb.set_trace()
+Y_train = to_categorical(y_train[:2500], 10)
+Y_test = to_categorical(y_test[:500], 10)
+
 
 metadata = pd.read_csv('../metadata/audio_metadata.csv',dtype=str)
 imgpath = '../chunkdata/img/*.png'
@@ -106,7 +121,8 @@ def create_data_generator(train_dataframe):
 
 
 def lrcn(train_generator, valid_generator):
-    input_shape = (1, 64, 64, 3) # (timestep, x, y, channels)
+    # input_shape = (1, 64, 64, 3) # (timestep, x, y, channels)
+    input_shape = (1, 28, 28, 1)
     initialiser = 'glorot_uniform'
 
     model = Sequential()
@@ -126,10 +142,10 @@ def lrcn(train_generator, valid_generator):
     # model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
 
     model.add(TimeDistributed(Flatten()))
-    # model.add(LSTM(256, return_sequences=False, dropout=0.5))
-    model.add(Reshape((7200,)))
+    model.add(LSTM(256, return_sequences=False, dropout=0.5))
+    # model.add(Reshape((1152,)))
     
-    model.add(Dense(2, activation='softmax'))
+    model.add(Dense(10, activation='softmax'))
 
 
     # Now compile the network.
@@ -139,12 +155,14 @@ def lrcn(train_generator, valid_generator):
     import ipdb; ipdb.set_trace()
 
 
-    model.fit_generator(generator=train_generator,
-                        steps_per_epoch=10,
-                        validation_data=valid_generator,
-                        validation_steps=10,
-                        epochs=10
-    )
+    # model.fit_generator(generator=train_generator,
+    #                     steps_per_epoch=10,
+    #                     validation_data=valid_generator,
+    #                     validation_steps=10,
+    #                     epochs=10
+    # )
+    model.fit(X_train, Y_train, batch_size=2, epochs=100, validation_data=(X_test, Y_test), steps_per_epoch=200, validation_steps=200)
+
 
 
 # TODO:
