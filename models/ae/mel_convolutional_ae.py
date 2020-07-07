@@ -14,7 +14,6 @@ import ipdb; ipdb.set_trace()
 
 # ----- ae version -----
 def make_batch(img_list):
-    import ipdb; ipdb.set_trace()
     train_dataset = []
     for each in img_list:
         img = cv2.imread(each)
@@ -66,7 +65,7 @@ model.fit(train_loader,train_loader, epochs = 10, batch_size = 10)
 
 import ipdb; ipdb.set_trace()
 
-ex = "../../chunkdata/img/173_chunk05.png"
+ex = "../../chunkdata/img/01_chunk05.png"
 img = cv2.imread(ex)
 img = cv2.resize(img, (64, 64))
 img = img.astype("float32")/255.0
@@ -74,7 +73,7 @@ img = np.reshape(img, (1,64,64,3))
 
 output = model.predict(img)
 
-for i in range(2):
+for i in range(1):
     plt.subplot(1,2,1)
     img = img.reshape(64,64,3)
     plt.imshow(img)
