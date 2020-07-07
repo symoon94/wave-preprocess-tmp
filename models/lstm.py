@@ -11,25 +11,34 @@ from keras_preprocessing.image import ImageDataGenerator
 import cv2
 import matplotlib.pyplot as plt
 
+import re
+
+def atoi(text):
+    return int(text) if text.isdigit() else text
+def natural_keys(text):
+    return [ atoi(c) for c in re.split('(\d+)',text) ]
+
 
 metadata=pd.read_csv('../metadata/audio_metadata.csv',dtype=str)
-imgpath = '../chunkdata/img/'
+imgpath = '../chunkdata/img/*.png'
 
 traindf = {'ID':[], 'class':[]}
 
+# traindf['ID']에 200ms 이미지들의 파일 경로 리스트를 넣어줌
+imgs = glob.glob(imgpath)
+tmp = []
+for img in imgs:
+    if int(img.split("chunk")[-1].rstrip('.png')) < 200:    
+        tmp.append(img)
+tmp.sort(key=natural_keys)
+traindf['ID'] += tmp
+
+import ipdb; ipdb.set_trace()
 for index, row in metadata.iterrows():
     ID = row['file_name']
     if len(ID) == 1:
         ID = "0" + ID
-
-    imgs = glob.glob(imgpath + ID + "/*")
-    tmp = []
-    for img in imgs:
-        if int(img.split("chunk")[-1].rstrip('.png')) < 200:    
-            tmp.append(img)
-    tmp.sort()
-    traindf['ID'] += tmp
-
+    
     start = int(row['start']) * 5
     end = int(row['end']) * 5
     tmp = np.zeros(200)
@@ -39,6 +48,7 @@ for index, row in metadata.iterrows():
         tmp[start:end+1] = 1
     traindf['class'] += list(tmp)
 
+import ipdb; ipdb.set_trace()
 traindf = pd.DataFrame(data=traindf)
 traindf['class'] = traindf['class'].astype(str)
 
@@ -51,9 +61,7 @@ train_generator=datagen.flow_from_dataframe(
     y_col="class",
     subset="training",
     batch_size=1,
-    seed=42,
-    shuffle=True,
-    class_mode=None,
+    class_mode="categorical",
     target_size=(64,64))
 
 valid_generator=datagen.flow_from_dataframe(
@@ -63,11 +71,10 @@ valid_generator=datagen.flow_from_dataframe(
     y_col="class",
     subset="validation",
     batch_size=1,
-    seed=42,
-    shuffle=True,
-    class_mode=None,
+    class_mode="categorical",
     target_size=(64,64))
 
+import ipdb; ipdb.set_trace()
 
 input_shape = (train_generator.shape[1], train_generator.shape[2])
 print("Build LSTM RNN model ...")

@@ -8,7 +8,7 @@ outdir = "../chunkdata/wav/"
 
 wavelist = glob.glob("../data/*") # ['../data/02.wav', '../data/03.wav']
 
-chunk_length_ms = 1000 # pydub calculates in millisec
+chunk_length_ms = 200 # pydub calculates in millisec
 
 for wave in wavelist:
     myaudio = AudioSegment.from_file(wave , "wav") 
