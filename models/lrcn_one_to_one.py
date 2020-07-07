@@ -155,9 +155,7 @@ def main():
     traindf = create_dataframe(imgpath)
     train_generator, valid_generator = create_data_generator(traindf)
     lrcn(train_generator, valid_generator)
-    import ipdb; ipdb.set_trace()
-
-
+    
 
 if __name__ == "__main__":
     main()
