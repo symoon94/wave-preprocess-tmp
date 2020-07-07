@@ -1,3 +1,7 @@
+'''
+200ms 이미지를 timestep 1로 해서 -> lrcn -> 폭력/비폭력 classification
+'''
+
 import logging
 import os
 
