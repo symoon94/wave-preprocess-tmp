@@ -93,7 +93,7 @@ def create_data_generator(train_dataframe):
         x_col="ID",
         y_col="class",
         subset="training",
-        batch_size=1,
+        batch_size=2,
         class_mode="categorical",
         target_size=(1,64,64))
 
@@ -103,7 +103,7 @@ def create_data_generator(train_dataframe):
         x_col="ID",
         y_col="class",
         subset="validation",
-        batch_size=1,
+        batch_size=2,
         class_mode="categorical",
         target_size=(1,64,64))
     
@@ -143,7 +143,7 @@ def lrcn(train_generator, valid_generator):
                         steps_per_epoch=200,
                         validation_data=valid_generator,
                         validation_steps=200,
-                        epochs=10
+                        epochs=100
     )
 
 
@@ -155,7 +155,7 @@ def main():
     traindf = create_dataframe(imgpath)
     train_generator, valid_generator = create_data_generator(traindf)
     lrcn(train_generator, valid_generator)
-    
+
 
 if __name__ == "__main__":
     main()
