@@ -29,7 +29,7 @@ for chunk in filedir:
     ax.set_frame_on(False)
 
     librosa.display.specshow(S_dB)
-    plt.savefig(outdir + "/" + outfile, dpi=400, bbox_inches='tight',pad_inches=0)
+    plt.savefig(outdir + "/" + outfile, bbox_inches='tight',pad_inches=0)
     plt.close()    
     fig.clf()
     plt.close(fig)
