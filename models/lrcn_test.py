@@ -1,8 +1,5 @@
 '''
 200ms 이미지를 timestep 1로 해서 -> lrcn -> 폭력/비폭력 classification
-TODO:
-- autoencoder로 representation learning 하고나서
-data -> encoder -> feature 뽑아내서 그 모아둔 feature을 lstm에 태우기
 '''
 
 import logging
@@ -13,7 +10,7 @@ from keras.layers.wrappers import TimeDistributed
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers.recurrent import LSTM
 
-from keras.layers import Dense, Flatten, Dropout, BatchNormalization, Activation
+from keras.layers import Dense, Flatten, Dropout, BatchNormalization, Activation, Reshape
 from keras.optimizers import Adam
 
 from keras_preprocessing.image import ImageDataGenerator
@@ -63,7 +60,6 @@ def create_dataframe(imgpath):
             tmp.append(img)
     tmp.sort(key=natural_keys)
     traindf['ID'] += tmp
-
     for index, row in metadata.iterrows():
         ID = row['file_name']
         if len(ID) == 1:
@@ -80,7 +76,6 @@ def create_dataframe(imgpath):
 
     traindf = pd.DataFrame(data=traindf)
     traindf['class'] = traindf['class'].astype(str)
-
     return traindf
 
 
@@ -93,7 +88,7 @@ def create_data_generator(train_dataframe):
         x_col="ID",
         y_col="class",
         subset="training",
-        batch_size=1,
+        batch_size=10,
         class_mode="categorical",
         target_size=(1,64,64))
 
@@ -103,7 +98,7 @@ def create_data_generator(train_dataframe):
         x_col="ID",
         y_col="class",
         subset="validation",
-        batch_size=1,
+        batch_size=10,
         class_mode="categorical",
         target_size=(1,64,64))
     
@@ -111,7 +106,7 @@ def create_data_generator(train_dataframe):
 
 
 def lrcn(train_generator, valid_generator):
-    input_shape = (1, 64, 64, 3)
+    input_shape = (1, 64, 64, 3) # (timestep, x, y, channels)
     initialiser = 'glorot_uniform'
 
     model = Sequential()
@@ -122,27 +117,32 @@ def lrcn(train_generator, valid_generator):
     model.add(TimeDistributed(BatchNormalization()))
     model.add(TimeDistributed(Activation('relu')))
     model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
-    model.add(TimeDistributed(Conv2D(64, (3, 3), padding='same', kernel_initializer="glorot_uniform")))
-    model.add(TimeDistributed(BatchNormalization()))
-    model.add(TimeDistributed(Activation('relu')))
-    model.add(TimeDistributed(Conv2D(64, (3, 3), padding='same', kernel_initializer="glorot_uniform")))
-    model.add(TimeDistributed(BatchNormalization()))
-    model.add(TimeDistributed(Activation('relu')))
-    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+    # model.add(TimeDistributed(Conv2D(64, (3, 3), padding='same', kernel_initializer="glorot_uniform")))
+    # model.add(TimeDistributed(BatchNormalization()))
+    # model.add(TimeDistributed(Activation('relu')))
+    # model.add(TimeDistributed(Conv2D(64, (3, 3), padding='same', kernel_initializer="glorot_uniform")))
+    # model.add(TimeDistributed(BatchNormalization()))
+    # model.add(TimeDistributed(Activation('relu')))
+    # model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
 
     model.add(TimeDistributed(Flatten()))
-    model.add(LSTM(256, return_sequences=False, dropout=0.5))
+    # model.add(LSTM(256, return_sequences=False, dropout=0.5))
+    model.add(Reshape((7200,)))
+    
     model.add(Dense(2, activation='softmax'))
+
 
     # Now compile the network.
     optimizer = Adam(lr=1e-5, decay=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
+    import ipdb; ipdb.set_trace()
+
 
     model.fit_generator(generator=train_generator,
-                        steps_per_epoch=200,
+                        steps_per_epoch=10,
                         validation_data=valid_generator,
-                        validation_steps=200,
+                        validation_steps=10,
                         epochs=10
     )
 
@@ -153,9 +153,9 @@ def lrcn(train_generator, valid_generator):
 
 def main():
     traindf = create_dataframe(imgpath)
+    import ipdb; ipdb.set_trace()
     train_generator, valid_generator = create_data_generator(traindf)
     lrcn(train_generator, valid_generator)
-    import ipdb; ipdb.set_trace()
 
 
 
