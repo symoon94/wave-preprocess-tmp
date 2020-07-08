@@ -28,7 +28,7 @@ for chunk in filedir:
     ax.axes.get_yaxis().set_visible(False)
     ax.set_frame_on(False)
 
-    librosa.display.specshow(S_dB)
+    librosa.display.specshow(S)
     plt.savefig(outdir + "/" + outfile, bbox_inches='tight',pad_inches=0)
     plt.close()    
     fig.clf()

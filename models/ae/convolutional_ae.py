@@ -67,7 +67,7 @@ for i in range(n):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 
-    # display reconstruction
+    # display reconstruction 
     ax = plt.subplot(2, n, i + n)
     plt.imshow(decoded_imgs[i].reshape(28, 28))
     plt.gray()
@@ -85,3 +85,16 @@ plt.show()
 #     ax.get_xaxis().set_visible(False)
 #     ax.get_yaxis().set_visible(False)
 # plt.show()
+
+
+######## 모델 저장 (weight 저장)###########
+#json 파일 저장
+json_save = './mnist_cae_weight_save/'
+
+model_json = autoencoder.to_json()
+with open(json_save+"model.json", "w") as json_file : 
+    json_file.write(model_json)
+
+#h5 파일 저장
+autoencoder.save_weights(json_save+"model.h5")
+print("Saved model to disk")

@@ -3,7 +3,7 @@ from keras.models import model_from_json, Model
 import glob
 
 
-json_save = './ae/cae_weight_save/'
+json_save = './ae/weight_save/'
 json_file = open(json_save+"model.json", "r") 
 loaded_model_json = json_file.read() 
 json_file.close() 

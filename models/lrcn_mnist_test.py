@@ -142,8 +142,9 @@ def lrcn(train_generator, valid_generator):
     # model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
 
     model.add(TimeDistributed(Flatten()))
-    model.add(LSTM(256, return_sequences=False, dropout=0.5))
     # model.add(Reshape((1152,)))
+    model.add(LSTM(256, return_sequences=False, dropout=0.5))
+    
     
     model.add(Dense(10, activation='softmax'))
 
