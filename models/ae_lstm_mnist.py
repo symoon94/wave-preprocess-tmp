@@ -18,13 +18,13 @@ from keras.models import load_model
 
 TIMESTEPS = 5
 CLASSES = 10
-EPOCHS = 10
+EPOCHS = 2000
 
 (X_train_full, y_train_full), (X_test, y_test) = keras.datasets.mnist.load_data()
 X_train_full = X_train_full.astype(np.float32) / 255
 X_test = X_test.astype(np.float32) / 255
-X_train, X_valid = X_train_full[:-5000], X_train_full[-5000:]
-y_train, y_valid = y_train_full[:-5000], y_train_full[-5000:]
+X_train, X_valid, X_test = X_train_full[:36000], X_train_full[36000:48000], X_train_full[48000:]
+y_train, y_valid, y_test = y_train_full[:36000], y_train_full[36000:48000], y_train_full[48000:]
 
 
 with open('./ae_lstm_mnist_save_weights/model.json', "r") as json_file2:
@@ -39,6 +39,7 @@ encoder.add(keras.layers.Flatten())
 
 features = encoder.predict(X_train)
 valid_features = encoder.predict(X_valid)
+test_features = encoder.predict(X_test)
 
 def create_dataset(X, Y, look_back=TIMESTEPS):
     dataX = []
@@ -52,6 +53,7 @@ def create_dataset(X, Y, look_back=TIMESTEPS):
 
 x_train, y_train = create_dataset(features, y_train, look_back=TIMESTEPS)
 x_valid, y_valid = create_dataset(valid_features, y_valid, look_back=TIMESTEPS)
+x_test, y_test = create_dataset(test_features, y_test, look_back=TIMESTEPS)
 
 input_shape = (TIMESTEPS, 576)
 lstm = keras.models.Sequential([
@@ -63,5 +65,20 @@ lstm.compile(loss="categorical_crossentropy", optimizer='adam', metrics=['accura
 
 lstm.fit(x_train, y_train,validation_data=(x_valid,y_valid), epochs = EPOCHS)
 
+# Evaluate the model on the test data using `evaluate`
+print("Evaluate on test data")
+results = lstm.evaluate(x_test, y_test, batch_size=128)
+print("test loss, test acc:", results)
 
 
+######## 모델 저장 (weight 저장)###########
+#json 파일 저장
+json_save = './mnist_cae_lstn_weight_save/'
+
+model_json = lstm.to_json()
+with open(json_save+"model.json", "w") as json_file : 
+    json_file.write(model_json)
+
+#h5 파일 저장
+lstm.save_weights(json_save+"model.h5")
+print("Saved model to disk")
