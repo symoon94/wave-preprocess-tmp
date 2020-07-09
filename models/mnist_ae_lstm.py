@@ -27,12 +27,12 @@ X_train, X_valid, X_test = X_train_full[:36000], X_train_full[36000:48000], X_tr
 y_train, y_valid, y_test = y_train_full[:36000], y_train_full[36000:48000], y_train_full[48000:]
 
 
-with open('./ae_lstm_mnist_save_weights/model.json', "r") as json_file2:
+with open('./ae/mnist_cae_save_weights/model.json', "r") as json_file2:
   loaded_model_json = json_file2.read()
   json_file2.close()
 
 loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights('./ae_lstm_mnist_save_weights/model.h5')
+loaded_model.load_weights('./ae/mnist_cae_save_weights/model.h5')
 
 encoder = loaded_model.layers[0]
 encoder.add(keras.layers.Flatten())
@@ -73,7 +73,7 @@ print("test loss, test acc:", results)
 
 ######## 모델 저장 (weight 저장)###########
 #json 파일 저장
-json_save = './mnist_cae_lstn_weight_save/'
+json_save = './mnist_ae_lstm_weight_save/'
 
 model_json = lstm.to_json()
 with open(json_save+"model.json", "w") as json_file : 
