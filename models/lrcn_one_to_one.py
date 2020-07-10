@@ -27,6 +27,7 @@ import matplotlib.pyplot as plt
 import re
 
 metadata = pd.read_csv('../metadata/audio_metadata.csv',dtype=str)
+metadata = metadata.sort_values(by=['file_name'])
 imgpath = '../chunkdata/img/*.png'
 # TODO: 더 효율적으로 input 넣어주는 방법 쓰기.
 # image로 변환 후 넣기보다는 training 하면서 wav -> input matrix로 바로 바꿔서 넣어준다거나.
