@@ -28,7 +28,6 @@ import struct
 from keras.callbacks import EarlyStopping
 
 
-
 # Generates/extracts Log-MEL Spectrogram coefficients with LibRosa 
 def get_mel_spectrogram(file_path, mfcc_max_padding=0, n_fft=2048, hop_length=512, n_mels=128):
     try:
@@ -110,51 +109,6 @@ def add_padding(features, mfcc_max_padding=174):
         padded.append(px)
 
     return padded
-
-
-# # Scales data between x_min and x_max
-# def scale(X, x_min, x_max, axis=0):
-#     nom = (X-X.min(axis=axis))*(x_max-x_min)
-#     denom = X.max(axis=axis) - X.min(axis=axis)
-#     denom[denom==0] = 1
-#     return x_min + nom/denom 
-
-
-# def save_split_distributions(test_split_idx, train_split_idx, file_path=None):
-#     if (path == None):
-#         print("You must enter a file path to save the splits")        
-#         return false
-
-    
-#     # Create split dictionary
-#     split = {}
-#     split['test_split_idx'] = test_split_idx
-#     split['train_split_idx'] = train_split_idx
-
-#     with open(file_path, 'wb') as file_pi:
-#         pickle.dump(split, file_pi)
-
-#     return file
-
-
-# def load_split_distributions(file_path):
-#     file = open(file_path, 'rb')
-#     data = pickle.load(file)
-#     return [data['test_split_idx'], data['train_split_idx']]
-  
-
-# def find_dupes(array):
-#     seen = {}
-#     dupes = []
-
-#     for x in array:
-#         if x not in seen:
-#             seen[x] = 1
-#         else:
-#             if seen[x] == 1:
-#                 dupes.append(x)
-#             seen[x] += 1
-#     return len(dupes)
 
 
 # Reads a file's header data and returns a list of wavefile properties
@@ -355,149 +309,149 @@ def plot_confusion_matrix(cm,
     fig.tight_layout()
     plt.show()
 
-# print("ESC50 CSV file {}".format(metadata_path))
+print("ESC50 CSV file {}".format(metadata_path))
 
-# # Load metadata as a Pandas dataframe
-# metadata = pd.read_csv(metadata_path)
-# metadata = metadata.loc[metadata.esc10 == True]
+# Load metadata as a Pandas dataframe
+metadata = pd.read_csv(metadata_path)
+metadata = metadata.loc[metadata.esc10 == True]
 
-# # Examine dataframe's head
-# metadata.head()
-
-
-# metadata['category'].value_counts()
-
-# # Read every file header to collect audio properties
-# audiodata = []
-# for index, row in metadata.iterrows():
-#     cat = str(row["category"])
-#     fold = str(row["fold"])
-#     name = str(row["filename"])
-#     file_name = os.path.join(audio_path, name)
-#     audio_props = read_header(file_name)
-#     audiodata.append((name, fold, cat) + audio_props)
-
-# # Convert into a Pandas dataframe
-# audiodatadf = pd.DataFrame(audiodata, columns=['file', 'fold', 'category', 'channels','sample_rate','bit_depth'])
+# Examine dataframe's head
+metadata.head()
 
 
-# print(audiodatadf.channels.value_counts(normalize=True))
+metadata['category'].value_counts()
+
+# Read every file header to collect audio properties
+audiodata = []
+for index, row in metadata.iterrows():
+    cat = str(row["category"])
+    fold = str(row["fold"])
+    name = str(row["filename"])
+    file_name = os.path.join(audio_path, name)
+    audio_props = read_header(file_name)
+    audiodata.append((name, fold, cat) + audio_props)
+
+# Convert into a Pandas dataframe
+audiodatadf = pd.DataFrame(audiodata, columns=['file', 'fold', 'category', 'channels','sample_rate','bit_depth'])
 
 
-# print("Bit depths:\n")
-# print(audiodatadf.bit_depth.value_counts(normalize=True))
+print(audiodatadf.channels.value_counts(normalize=True))
 
 
-# print("Sample rates:\n")
-# print(audiodatadf.sample_rate.value_counts(normalize=True))
+print("Bit depths:\n")
+print(audiodatadf.bit_depth.value_counts(normalize=True))
 
 
-# # 램덤 파일
-# row = metadata.sample(1)
-# file_path = audio_path + '/' + str(row.iloc[0,0])
-
-# # Window 사이즈
-# n_fft=2048
-# hop_length=512
-
-# # 오디오 읽고 ->  y(audion time-series), sr(sample_rate)
-# y, sr = librosa.load(file_path)
-
-# # Normalize between -1 and 1
-# normalized_y = librosa.util.normalize(y)
-
-# # Compute STFT
-# stft = librosa.core.stft(normalized_y, n_fft=n_fft, hop_length=hop_length)
-
-# # Convert sound intensity to log amplitude:
-# stft_db = librosa.amplitude_to_db(abs(stft))
+print("Sample rates:\n")
+print(audiodatadf.sample_rate.value_counts(normalize=True))
 
 
-# # Plot spectrogram from STFT
-# plt.figure(figsize=(12, 4))
-# librosa.display.specshow(stft_db, x_axis='time', y_axis='log')
-# plt.colorbar(format='%+2.0f dB');
-# plt.title('STFT Spectrogram')
-# plt.tight_layout()
-# plt.show()
+# 램덤 파일
+row = metadata.sample(1)
+file_path = audio_path + '/' + str(row.iloc[0,0])
+
+# Window 사이즈
+n_fft=2048
+hop_length=512
+
+# 오디오 읽고 ->  y(audion time-series), sr(sample_rate)
+y, sr = librosa.load(file_path)
+
+# Normalize between -1 and 1
+normalized_y = librosa.util.normalize(y)
+
+# Compute STFT
+stft = librosa.core.stft(normalized_y, n_fft=n_fft, hop_length=hop_length)
+
+# Convert sound intensity to log amplitude:
+stft_db = librosa.amplitude_to_db(abs(stft))
 
 
-# n_mels = 128
-
-# # 멜스펙트로그램 
-# mel = librosa.feature.melspectrogram(S=stft, n_mels=n_mels)
-
-# # 변환 log amplitude:
-# mel_db = librosa.amplitude_to_db(abs(mel))
-
-# # 노멀라이즈 -1 ~ 1
-# normalized_mel = librosa.util.normalize(mel_db)
-
-# # 사진
-# plt.figure(figsize=(12, 4))
-# librosa.display.specshow(mel_db, x_axis='time', y_axis='mel')
-# plt.colorbar(format='%+2.0f dB');
-# plt.title('MEL-Scaled Spectrogram')
-# plt.tight_layout()
-# plt.show()
+# Plot spectrogram from STFT
+plt.figure(figsize=(12, 4))
+librosa.display.specshow(stft_db, x_axis='time', y_axis='log')
+plt.colorbar(format='%+2.0f dB');
+plt.title('STFT Spectrogram')
+plt.tight_layout()
+plt.show()
 
 
-# # Iterate through all audio files and extract MFCC
-# features = []
-# labels = []
-# frames_max = 0
-# counter = 0
-# total_samples = len(metadata)
-# n_mels=40
+n_mels = 128
 
-# for index, row in metadata.iterrows():
-#     file_path = os.path.join(os.path.abspath(audio_path), str(row["filename"]))
-#     class_label = row["category"]
+# 멜스펙트로그램 
+mel = librosa.feature.melspectrogram(S=stft, n_mels=n_mels)
 
-#     # Extract Log-Mel Spectrograms (do not add padding)
-#     mels = get_mel_spectrogram(file_path, 0, n_mels=n_mels)
+# 변환 log amplitude:
+mel_db = librosa.amplitude_to_db(abs(mel))
+
+# 노멀라이즈 -1 ~ 1
+normalized_mel = librosa.util.normalize(mel_db)
+
+# 사진
+plt.figure(figsize=(12, 4))
+librosa.display.specshow(mel_db, x_axis='time', y_axis='mel')
+plt.colorbar(format='%+2.0f dB');
+plt.title('MEL-Scaled Spectrogram')
+plt.tight_layout()
+plt.show()
+
+
+# Iterate through all audio files and extract MFCC
+features = []
+labels = []
+frames_max = 0
+counter = 0
+total_samples = len(metadata)
+n_mels=40
+
+for index, row in metadata.iterrows():
+    file_path = os.path.join(os.path.abspath(audio_path), str(row["filename"]))
+    class_label = row["category"]
+
+    # Extract Log-Mel Spectrograms (do not add padding)
+    mels = get_mel_spectrogram(file_path, 0, n_mels=n_mels)
     
-#     # Save current frame count
-#     num_frames = mels.shape[1]
+    # Save current frame count
+    num_frames = mels.shape[1]
     
-#     # Add row (feature / label)
-#     # features.append(mels)
-#     mels = mels[:,:215]
-#     features = features + np.hsplit(mels, 5)
+    # Add row (feature / label)
+    # features.append(mels)
+    mels = mels[:,:215]
+    features = features + np.hsplit(mels, 5)
 
-#     # labels.append(class_label)
-#     labels = labels + [class_label]*5
+    # labels.append(class_label)
+    labels = labels + [class_label]*5
 
-#     # Update frames maximum
-#     if (num_frames > frames_max):
-#         frames_max = num_frames
+    # Update frames maximum
+    if (num_frames > frames_max):
+        frames_max = num_frames
 
-#     # Notify update every N files
-#     if (counter == 500):
-#         print("Status: {}/{}".format(index+1, total_samples))
-#         counter = 0
+    # Notify update every N files
+    if (counter == 500):
+        print("Status: {}/{}".format(index+1, total_samples))
+        counter = 0
 
-#     counter += 1
+    counter += 1
     
-# print("Finished: {}/{}".format(index, total_samples))
+print("Finished: {}/{}".format(index, total_samples))
 
 
-# # Add padding to features with less than frames than frames_max
-# padded_features = features
-# # padded_features = add_padding(features, frames_max)
+# Add padding to features with less than frames than frames_max
+padded_features = features
+# padded_features = add_padding(features, frames_max)
 
 
-# print("Raw features length: {}".format(len(features)))
-# print("Padded features length: {}".format(len(padded_features)))
-# print("Feature labels length: {}".format(len(labels)))
+print("Raw features length: {}".format(len(features)))
+print("Padded features length: {}".format(len(padded_features)))
+print("Feature labels length: {}".format(len(labels)))
 
 
-# # Convert features (X) and labels (y) to Numpy arrays
-# X = np.array(padded_features)
-# y = np.array(labels)
+# Convert features (X) and labels (y) to Numpy arrays
+X = np.array(padded_features)
+y = np.array(labels)
 
-# np.save("/Users/sooyoungmoon/git/coretech/ESC-50-master/X-mel_1sec_spec", X)
-# np.save("/Users/sooyoungmoon/git/coretech/ESC-50-master/y-mel_1sec_spec", y)
+np.save("/Users/sooyoungmoon/git/coretech/ESC-50-master/X-mel_1sec_spec", X)
+np.save("/Users/sooyoungmoon/git/coretech/ESC-50-master/y-mel_1sec_spec", y)
 
 
 import sys
