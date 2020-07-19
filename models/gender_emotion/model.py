@@ -78,7 +78,6 @@ class AudioNet:
 
 
 adnet = AudioNet(height, width).build()
-import ipdb; ipdb.set_trace()
 
 losses = {
 	"emotion_output": "binary_crossentropy",
