@@ -3,10 +3,14 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from keras.models import Model
 from keras.regularizers import l2
+from tensorflow.keras.optimizers import Adam
 
 spatial_dropout_rate_1 = 0.07
 spatial_dropout_rate_2 = 0.14
 l2_rate = 0.0005
+
+INIT_LR = 1e-3
+EPOCHS = 1000
 
 height = 256
 width = 250
@@ -81,3 +85,7 @@ losses = {
 	"gender_output": "categorical_crossentropy",
 }
 lossWeights = {"emotion_output": 1.0, "color_output": 1.0}
+
+opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
+model.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
+	metrics=["accuracy"])
