@@ -77,7 +77,7 @@ class AudioNet:
         return model
 
 
-adnet = AudioNet(height, width).build().summary()
+adnet = AudioNet(height, width).build()
 import ipdb; ipdb.set_trace()
 
 losses = {
@@ -87,5 +87,5 @@ losses = {
 lossWeights = {"emotion_output": 1.0, "color_output": 1.0}
 
 opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
-model.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
+adnet.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
 	metrics=["accuracy"])
