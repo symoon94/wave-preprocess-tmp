@@ -75,3 +75,9 @@ class AudioNet:
 
 adnet = AudioNet(height, width).build().summary()
 import ipdb; ipdb.set_trace()
+
+losses = {
+	"emotion_output": "binary_crossentropy",
+	"gender_output": "categorical_crossentropy",
+}
+lossWeights = {"emotion_output": 1.0, "color_output": 1.0}
